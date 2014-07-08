@@ -21,6 +21,6 @@ foreach ($words as $word) {
     printf("%s'%ski\n", $word, Tiriviri::run($word, Tiriviri::CMD_DEDA));
     if ($last != $word) {
         $last = $word;
-        printf("-\n");
+        printf("\n");
     }
 }
