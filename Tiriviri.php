@@ -16,7 +16,7 @@
  */
 
 /**
- * @class Tiriviri v0.1
+ * @class Tiriviri v0.3
  *
  * Tiriviri object
  * Fixes noun suffixes (case suffixes) in Türkçe
@@ -29,78 +29,104 @@ class Tiriviri
     const CMD_DEDA = 'de-da';
 
     // All chars
-    static $chars_all = array('a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U', 'ö', 'ü', 'Ö', 'Ü', 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'ç', 'ğ', 'ş');
+    static $charsAll = array(
+        'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
+        'ö', 'ü', 'Ö', 'Ü', 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k',
+        'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y',
+        'z', 'ç', 'ğ', 'ş'
+    );
     // Vowels
-    static $chars_vowel = array('a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U', 'ö', 'ü', 'Ö', 'Ü');
+    static $charsVowel = array(
+        'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
+        'ö', 'ü', 'Ö', 'Ü'
+    );
     // Consonants
-    static $chars_consonant = array('b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'ç', 'ğ', 'ş');
-    static $chars_vowel1 = array('a', 'ı', 'A', 'I');
-    static $chars_vowel2 = array('e', 'i', 'E', 'İ');
-    static $chars_vowel3 = array('o', 'u', 'O', 'U');
-    static $chars_vowel4 = array('ö', 'ü', 'Ö', 'Ü');
+    static $charsConsonant = array(
+        'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+        'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'ç', 'ğ', 'ş'
+    );
+
+    // Partials
+    static $charsVowel1 = array('a', 'ı', 'A', 'I'),
+           $charsVowel2 = array('e', 'i', 'E', 'İ'),
+           $charsVowel3 = array('o', 'u', 'O', 'U'),
+           $charsVowel4 = array('ö', 'ü', 'Ö', 'Ü');
 
     public static function toLower($s) {
-        return mb_strtolower(str_replace(array('I', 'İ'), array('ı', 'i'), $s), 'UTF-8');
+        // Fix trouble chars
+        $s = str_replace(array('I', 'İ'), array('ı', 'i'), $s);
+        return mb_strtolower($s, 'UTF-8');
     }
 
-    public static function run($word, $cmd = '') {
+    public static function run($word, $cmd = self::CMD_ININ) {
         $chars = array();
-        $split = array_reverse(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY));
-        foreach ($split as $s) {
-            $s = self::toLower($s);
-            if (in_array($s, self::$chars_all)) {
-                $chars[] = $s;
-            }
-        }
-        $last_vowel = null;
-        foreach ($chars as $char) {
-            if (in_array($char, self::$chars_vowel)) {
-                $last_vowel = $char;
-                break;
+        $temps = array_reverse(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY));
+        $lastVowel = null;
+        foreach ($temps as $temp) {
+            $temp = self::toLower($temp);
+            // Fill out chars
+            if (in_array($temp, self::$charsAll)) {
+                $chars[] = $temp;
+                // Find last vovel
+                if (is_null($lastVowel) && in_array($temp, self::$charsVowel)) {
+                    $lastVowel = $temp;
+                }
             }
         }
 
-        if ($cmd == '' || $cmd == self::CMD_ININ) {
-                if (in_array($last_vowel, self::$chars_vowel1)) $rval = 'nın';
-            elseif (in_array($last_vowel, self::$chars_vowel2)) $rval = 'nin';
-            elseif (in_array($last_vowel, self::$chars_vowel3)) $rval = 'nun';
-            elseif (in_array($last_vowel, self::$chars_vowel4)) $rval = 'nün';
-            $last_letter = $chars[0];
-            // Delete (if not vowel)
-            if (!in_array($last_letter, self::$chars_vowel)) {
-                $rval = mb_substr($rval, 1);
-            }
-        } elseif ($cmd == self::CMD_DEDA) {
-                if (in_array($last_vowel, self::$chars_vowel1)) $rval = 'da';
-            elseif (in_array($last_vowel, self::$chars_vowel2)) $rval = 'de';
-            elseif (in_array($last_vowel, self::$chars_vowel3)) $rval = 'da';
-            elseif (in_array($last_vowel, self::$chars_vowel4)) $rval = 'de';
-            $last_letter = $chars[0];
-            // Hard consonants or something like that... :)
-            if (preg_match('/[pçtksşhf]/u', $last_letter)) {
-                $rval = 't'. $rval[1];
-            }
-        } elseif ($cmd == self::CMD_EA) {
-                if (in_array($last_vowel, self::$chars_vowel1)) $rval = 'ya';
-            elseif (in_array($last_vowel, self::$chars_vowel2)) $rval = 'ye';
-            elseif (in_array($last_vowel, self::$chars_vowel3)) $rval = 'ya';
-            elseif (in_array($last_vowel, self::$chars_vowel4)) $rval = 'ye';
-            $last_letter = $chars[0];
-            // Delete (if not consonant)
-            if (in_array($last_letter, self::$chars_consonant)) {
-                $rval = mb_substr($rval, 1);
-            }
-        } elseif ($cmd == self::CMD_II) {
-                if (in_array($last_vowel, self::$chars_vowel1)) $rval = 'yı';
-            elseif (in_array($last_vowel, self::$chars_vowel2)) $rval = 'yi';
-            elseif (in_array($last_vowel, self::$chars_vowel3)) $rval = 'yu';
-            elseif (in_array($last_vowel, self::$chars_vowel4)) $rval = 'yü';
-            $last_letter = $chars[0];
-            // Delete (if not consonant)
-            if (in_array($last_letter, self::$chars_consonant)) {
-                $rval = mb_substr($rval, 1);
-            }
+        // Let's do it!
+        switch ($cmd) {
+            // Ali'nin, Kerem'in
+            case (self::CMD_ININ):
+                    if (in_array($lastVowel, self::$charsVowel1)) $rval = 'nın';
+                elseif (in_array($lastVowel, self::$charsVowel2)) $rval = 'nin';
+                elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'nun';
+                elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'nün';
+                $lastLetter = $chars[0];
+                // Delete (if not vowel)
+                if (!in_array($lastLetter, self::$charsVowel)) {
+                    $rval = mb_substr($rval, 1);
+                }
+                break;
+            // Ali'de, Ali'den, Ali'deki... Kerem'de, Kerem'den, Kerem'deki
+            case (self::CMD_DEDA):
+                    if (in_array($lastVowel, self::$charsVowel1)) $rval = 'da';
+                elseif (in_array($lastVowel, self::$charsVowel2)) $rval = 'de';
+                elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'da';
+                elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'de';
+                $lastLetter = $chars[0];
+                // Hard consonants or something like that... :)
+                if (preg_match('~[pçtksşhf]~u', $lastLetter)) {
+                    $rval = 't'. $rval[1];
+                }
+                break;
+            // Ali'ye, Kerem'e
+            case (self::CMD_EA):
+                    if (in_array($lastVowel, self::$charsVowel1)) $rval = 'ya';
+                elseif (in_array($lastVowel, self::$charsVowel2)) $rval = 'ye';
+                elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'ya';
+                elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'ye';
+                $lastLetter = $chars[0];
+                // Delete (if not consonant)
+                if (in_array($lastLetter, self::$charsConsonant)) {
+                    $rval = mb_substr($rval, 1);
+                }
+                break;
+            // Ali'yi, Kerem'i
+            case (self::CMD_II):
+                    if (in_array($lastVowel, self::$charsVowel1)) $rval = 'yı';
+                elseif (in_array($lastVowel, self::$charsVowel2)) $rval = 'yi';
+                elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'yu';
+                elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'yü';
+                $lastLetter = $chars[0];
+                // Delete (if not consonant)
+                if (in_array($lastLetter, self::$charsConsonant)) {
+                    $rval = mb_substr($rval, 1);
+                }
+                break;
         }
+
+        // Yes, we did it!
         return $rval;
     }
 }
