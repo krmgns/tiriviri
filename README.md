@@ -1,6 +1,8 @@
-Fixes noun suffixes (case suffixes) in Türkçe.
+Fixes the noun suffixes (case suffixes) in Türkçe.
 
 test.php result:
+
+---
 
 Ali'ye
 Ali'yi
