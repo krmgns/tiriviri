@@ -16,13 +16,17 @@
  */
 
 /**
- * @class Tiriviri v0.3
+ * @class Tiriviri v0.4
  *
  * Tiriviri object
  * Fixes noun suffixes (case suffixes) in Türkçe
  */
 class Tiriviri
 {
+    // Charset
+    const CHARSET = 'utf-8';
+
+    // Commands
     const CMD_EA   = 'e-a';
     const CMD_II   = 'ı-i';
     const CMD_ININ = 'ın-in';
@@ -35,11 +39,13 @@ class Tiriviri
         'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y',
         'z', 'ç', 'ğ', 'ş'
     );
+
     // Vowels
     static $charsVowel = array(
         'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
         'ö', 'ü', 'Ö', 'Ü'
     );
+
     // Consonants
     static $charsConsonant = array(
         'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
@@ -54,8 +60,12 @@ class Tiriviri
 
     public static function toLower($s) {
         // Fix trouble chars
-        $s = str_replace(array('I', 'İ'), array('ı', 'i'), $s);
-        return mb_strtolower($s, 'UTF-8');
+        $s = str_replace(
+            array('I', 'İ'),
+            array('ı', 'i'),
+        $s);
+
+        return mb_strtolower($s, self::CHARSET);
     }
 
     public static function run($word, $cmd = self::CMD_ININ) {
@@ -74,6 +84,9 @@ class Tiriviri
             }
         }
 
+        // set as none default
+        $rval = '';
+
         // Let's do it!
         switch ($cmd) {
             // Ali'nin, Kerem'in
@@ -85,7 +98,7 @@ class Tiriviri
                 $lastLetter = $chars[0];
                 // Delete (if not vowel)
                 if (!in_array($lastLetter, self::$charsVowel)) {
-                    $rval = mb_substr($rval, 1);
+                    $rval = mb_substr($rval, 1, null, self::CHARSET);
                 }
                 break;
             // Ali'de, Ali'den, Ali'deki... Kerem'de, Kerem'den, Kerem'deki
@@ -109,7 +122,7 @@ class Tiriviri
                 $lastLetter = $chars[0];
                 // Delete (if not consonant)
                 if (in_array($lastLetter, self::$charsConsonant)) {
-                    $rval = mb_substr($rval, 1);
+                    $rval = mb_substr($rval, 1, null, self::CHARSET);
                 }
                 break;
             // Ali'yi, Kerem'i
@@ -121,12 +134,11 @@ class Tiriviri
                 $lastLetter = $chars[0];
                 // Delete (if not consonant)
                 if (in_array($lastLetter, self::$charsConsonant)) {
-                    $rval = mb_substr($rval, 1);
+                    $rval = mb_substr($rval, 1, null, self::CHARSET);
                 }
                 break;
         }
 
-        // Yes, we did it!
         return $rval;
     }
 }
