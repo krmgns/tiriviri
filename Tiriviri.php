@@ -16,10 +16,9 @@
  */
 
 /**
- * @class Tiriviri v0.4
- *
- * Tiriviri object
- * Fixes noun suffixes (case suffixes) in Türkçe
+ * @object  Tiriviri
+ * @version v1.0
+ * @author  Kerem Gunes <qeremy@gmail>
  */
 class Tiriviri
 {
