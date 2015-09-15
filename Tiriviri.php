@@ -33,43 +33,43 @@ class Tiriviri
     const CMD_DEDA = 'de-da';
 
     // All chars
-    static $charsAll = array(
+    static $charsAll = [
         'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
         'ö', 'ü', 'Ö', 'Ü', 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k',
         'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y',
         'z', 'ç', 'ğ', 'ş'
-    );
+    ];
 
     // Vowels
-    static $charsVowel = array(
+    static $charsVowel = [
         'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
         'ö', 'ü', 'Ö', 'Ü'
-    );
+    ];
 
     // Consonants
-    static $charsConsonant = array(
+    static $charsConsonant = [
         'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
         'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'ç', 'ğ', 'ş'
-    );
+    ];
 
     // Partials
-    static $charsVowel1 = array('a', 'ı', 'A', 'I'),
-           $charsVowel2 = array('e', 'i', 'E', 'İ'),
-           $charsVowel3 = array('o', 'u', 'O', 'U'),
-           $charsVowel4 = array('ö', 'ü', 'Ö', 'Ü');
+    static $charsVowel1 = ['a', 'ı', 'A', 'I'],
+           $charsVowel2 = ['e', 'i', 'E', 'İ'],
+           $charsVowel3 = ['o', 'u', 'O', 'U'],
+           $charsVowel4 = ['ö', 'ü', 'Ö', 'Ü'];
 
     public static function toLower($s) {
         // Fix trouble chars
         $s = str_replace(
-            array('I', 'İ'),
-            array('ı', 'i'),
+            ['I', 'İ'],
+            ['ı', 'i'],
         $s);
 
         return mb_strtolower($s, self::CHARSET);
     }
 
     public static function run($word, $cmd = self::CMD_ININ) {
-        $chars = array();
+        $chars = [];
         $temps = array_reverse(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY));
         $lastVowel = null;
         foreach ($temps as $temp) {
