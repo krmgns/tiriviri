@@ -22,16 +22,25 @@
  */
 class Tiriviri
 {
-    // Charset
+    /**
+     * Multibyte charset.
+     * @const string
+     */
     const CHARSET = 'utf-8';
 
-    // Commands
-    const CMD_EA   = 'e-a';
-    const CMD_II   = 'ı-i';
-    const CMD_ININ = 'ın-in';
-    const CMD_DEDA = 'de-da';
+    /**
+     * Run method commands.
+     * @const string
+     */
+    const CMD_EA   = 'e-a',
+          CMD_II   = 'ı-i',
+          CMD_ININ = 'ın-in',
+          CMD_DEDA = 'de-da';
 
-    // All chars
+    /**
+     * All chars.
+     * @var array
+     */
     static $charsAll = [
         'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
         'ö', 'ü', 'Ö', 'Ü', 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k',
@@ -39,26 +48,41 @@ class Tiriviri
         'z', 'ç', 'ğ', 'ş'
     ];
 
-    // Vowels
+    /**
+     * Vowels.
+     * @var array
+     */
     static $charsVowel = [
         'a', 'ı', 'A', 'I', 'e', 'i', 'E', 'İ', 'o', 'u', 'O', 'U',
         'ö', 'ü', 'Ö', 'Ü'
     ];
 
-    // Consonants
+    /**
+     * Consonants.
+     * @var array
+     */
     static $charsConsonant = [
         'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
         'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'ç', 'ğ', 'ş'
     ];
 
-    // Partials
+    /**
+     * Partials.
+     * @var array
+     */
     static $charsVowel1 = ['a', 'ı', 'A', 'I'],
            $charsVowel2 = ['e', 'i', 'E', 'İ'],
            $charsVowel3 = ['o', 'u', 'O', 'U'],
            $charsVowel4 = ['ö', 'ü', 'Ö', 'Ü'];
 
+    /**
+     * Lower-case hepler.
+     *
+     * @param  string $s
+     * @return string
+     */
     public static function toLower($s) {
-        // Fix trouble chars
+        // fix trouble chars
         $s = str_replace(
             ['I', 'İ'],
             ['ı', 'i'],
@@ -67,16 +91,23 @@ class Tiriviri
         return mb_strtolower($s, self::CHARSET);
     }
 
+    /**
+     * Suffix appender.
+     *
+     * @param  string $word
+     * @param  string $cmd
+     * @return string
+     */
     public static function run($word, $cmd = self::CMD_ININ) {
         $chars = [];
-        $temps = array_reverse(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY));
+        $temps = array_reverse(preg_split('~~u', $word, -1, PREG_SPLIT_NO_EMPTY));
         $lastVowel = null;
         foreach ($temps as $temp) {
             $temp = self::toLower($temp);
-            // Fill out chars
+            // fill out chars
             if (in_array($temp, self::$charsAll)) {
                 $chars[] = $temp;
-                // Find last vovel
+                // find last vovel
                 if (is_null($lastVowel) && in_array($temp, self::$charsVowel)) {
                     $lastVowel = $temp;
                 }
@@ -86,7 +117,7 @@ class Tiriviri
         // set as none default
         $rval = '';
 
-        // Let's do it!
+        // let's do it!
         switch ($cmd) {
             // Ali'nin, Kerem'in
             case (self::CMD_ININ):
@@ -95,7 +126,7 @@ class Tiriviri
                 elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'nun';
                 elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'nün';
                 $lastLetter = $chars[0];
-                // Delete (if not vowel)
+                // delete if not vowel
                 if (!in_array($lastLetter, self::$charsVowel)) {
                     $rval = mb_substr($rval, 1, null, self::CHARSET);
                 }
@@ -107,7 +138,7 @@ class Tiriviri
                 elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'da';
                 elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'de';
                 $lastLetter = $chars[0];
-                // Hard consonants or something like that... :)
+                // hard consonants or something like that... :)
                 if (preg_match('~[pçtksşhf]~u', $lastLetter)) {
                     $rval = 't'. $rval[1];
                 }
@@ -119,7 +150,7 @@ class Tiriviri
                 elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'ya';
                 elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'ye';
                 $lastLetter = $chars[0];
-                // Delete (if not consonant)
+                // delete if not consonant
                 if (in_array($lastLetter, self::$charsConsonant)) {
                     $rval = mb_substr($rval, 1, null, self::CHARSET);
                 }
@@ -131,7 +162,7 @@ class Tiriviri
                 elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'yu';
                 elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'yü';
                 $lastLetter = $chars[0];
-                // Delete (if not consonant)
+                // delete if not consonant
                 if (in_array($lastLetter, self::$charsConsonant)) {
                     $rval = mb_substr($rval, 1, null, self::CHARSET);
                 }
