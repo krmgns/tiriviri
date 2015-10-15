@@ -108,7 +108,7 @@ class Tiriviri
             if (in_array($temp, self::$charsAll)) {
                 $chars[] = $temp;
                 // find last vowel
-                if (is_null($lastVowel) && in_array($temp, self::$charsVowel)) {
+                if ($lastVowel === null && in_array($temp, self::$charsVowel)) {
                     $lastVowel = $temp;
                 }
             }
