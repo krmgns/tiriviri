@@ -17,7 +17,7 @@
 
 /**
  * @object  Tiriviri
- * @version v1.0
+ * @version v1.1
  * @author  Kerem Gunes <qeremy@gmail>
  */
 class Tiriviri
@@ -32,10 +32,11 @@ class Tiriviri
      * Run method commands.
      * @const string
      */
-    const CMD_EA   = 'e-a',
-          CMD_II   = 'ı-i',
-          CMD_ININ = 'ın-in',
-          CMD_DEDA = 'de-da';
+    const CMD_EA       = 'e-a',
+          CMD_II       = 'ı-i',
+          CMD_ININ     = 'ın-in',
+          CMD_DEDA     = 'de-da',
+          CMD_INDEINDA = 'inde-ında';
 
     /**
      * All chars.
@@ -142,6 +143,13 @@ class Tiriviri
                 if (preg_match('~[pçtksşhf]~u', $lastLetter)) {
                     $rval = 't'. $rval[1];
                 }
+                break;
+            // Safranbolu Lisesi'nde, Kağıt Fabrikası'nda
+            case (self::CMD_INDEINDA):
+                    if (in_array($lastVowel, self::$charsVowel1)) $rval = 'nda';
+                elseif (in_array($lastVowel, self::$charsVowel2)) $rval = 'nde';
+                elseif (in_array($lastVowel, self::$charsVowel3)) $rval = 'nda';
+                elseif (in_array($lastVowel, self::$charsVowel4)) $rval = 'nde';
                 break;
             // Ali'ye, Kerem'e
             case (self::CMD_EA):
